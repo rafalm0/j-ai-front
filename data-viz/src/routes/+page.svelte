@@ -17,44 +17,50 @@
 	<div class="columnsDiv" style="">
 		{#if chatting}
 			{#if dbOpen}
-				<div>
+				<div class="centerDiv">
 					<Dbcontrol />
-					<button
-						class="ChangeStateButton"
-						on:click={() => {
-							dbOpen = !dbOpen;
-						}}>Close database tab</button
-					>
+					<div class="buttonDiv">
+						<button
+							class="ChangeStateButton"
+							on:click={() => {
+								dbOpen = !dbOpen;
+							}}>Close database tab</button
+						>
+					</div>
 				</div>
 			{:else}
-				<div>
+				<div class="centerDiv">
 					<Chatbot />
+					<div class="buttonDiv">
+						<button
+							class="ChangeStateButton"
+							on:click={() => {
+								chatting = !chatting;
+								submit_chat();
+							}}>See where you Stand</button
+						>
+						<button
+							class="ChangeStateButton"
+							on:click={() => {
+								dbOpen = !dbOpen;
+							}}
+						>
+							Open database tab</button
+						>
+					</div>
+				</div>
+			{/if}
+		{:else}
+			<div class="centerDiv">
+				<DataViz />
+				<div class="buttonDiv">
 					<button
 						class="ChangeStateButton"
 						on:click={() => {
 							chatting = !chatting;
-							submit_chat();
-						}}>See where you Stand</button
-					>
-					<button
-						class="ChangeStateButton"
-						on:click={() => {
-							dbOpen = !dbOpen;
-						}}
-					>
-						Open database tab</button
+						}}>Want to chat again?</button
 					>
 				</div>
-			{/if}
-		{:else}
-			<div>
-				<DataViz />
-				<button
-					class="ChangeStateButton"
-					on:click={() => {
-						chatting = !chatting;
-					}}>Want to chat again?</button
-				>
 			</div>
 		{/if}
 	</div>
@@ -62,27 +68,50 @@
 
 <style>
 	.Page {
-		left: 2px;
 		position: absolute;
-		width: calc(100% - 5px);
-		height: calc(100% - 5px);
-		border: 5px solid #541990;
-		border-radius: 10px;
-		/* z-index: 99999; */
-		background: #a239ca !important;
+		display: flex;
+		height: calc(100%);
+		width: calc(100%);
+		min-height: 100vh;
+		flex-direction: column;
+		overflow: auto;
+		border: 5px solid #340a5e;
+		border-radius: 2px;
+		z-index: 99999;
+		background: radial-gradient(#2d0042 0%, #040024 100%);
 	}
 
 	.columnsDiv {
+		position: relative;
 	}
 
 	.ChangeStateButton {
 		padding: 0.5rem 1rem;
-		left: calc(40%);
+		/* left: calc(40%); */
+		width: calc(50%);
 		border: none;
 		background-color: #0077cc;
 		color: white;
 		border-radius: 0.5rem;
 		cursor: pointer;
+	}
+
+	.centerDiv {
+		margin: 2rem auto;
+	}
+
+	.buttonDiv {
+		display: flex;
+		flex-direction: row;
+		max-width: calc(70% - 5px);
+		align-items: stretch;
+		column-gap: 1rem;
+		margin: 2rem auto;
+		background: #372f2f;
+
+		border-radius: 1rem;
+		padding: 1rem;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 	}
 
 	.ChangeStateButton:hover {
