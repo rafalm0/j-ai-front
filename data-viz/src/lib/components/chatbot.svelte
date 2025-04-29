@@ -1,39 +1,59 @@
 <script lang="ts">
-	let messages: { role: 'user' | 'bot'; text: string }[] = [];
+	let messages: { bot: string; text: string }[] = [];
 	let input = '';
 	let session_id = '';
 
-	function sendMessage() {
+	async function startConversation() {
 		if (!input.trim()) return;
-		messages = [...messages, { role: 'user', text: input }];
 
-		let body = `{"message" : "${input}"}`;
-		if (session_id != '') {
-			body = `{"message" : "${input}", "session_id": "${session_id}"}`;
-		}
+		messages = [];
+		const body = JSON.stringify({
+			topic: input,
+			session_id: session_id || null,
+			continue_conversation: false
+		});
 		input = '';
+
 		const options = {
 			method: 'POST',
-			headers: { 'Content-Type': 'application/json', 'User-Agent': 'insomnia/10.3.1' },
-			body: body
+			headers: { 'Content-Type': 'application/json' },
+			body
 		};
 
-		fetch('http://127.0.0.1:8000/chat', options)
-			.then((response) => response.json())
-			.then((response) => {
-				messages = [...messages, { role: 'bot', text: response.response }];
-				console.log(response.data_collected);
-				session_id = response.session_id;
-			})
-			.catch((err) => console.error(err));
+		const response = await fetch('http://127.0.0.1:8000/multi-agent-chat', options);
+		const data = await response.json();
+
+		session_id = data.session_id;
+		messages = [...messages, { bot: data.bot_name, text: data.response }];
+	}
+
+	async function continueConversation() {
+		if (!session_id) return;
+
+		const body = JSON.stringify({
+			topic: '', // No need to resend topic
+			session_id,
+			continue_conversation: true
+		});
+
+		const options = {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body
+		};
+
+		const response = await fetch('http://127.0.0.1:8000/multi-agent-chat', options);
+		const data = await response.json();
+
+		messages = [...messages, { bot: data.bot_name, text: data.response }];
 	}
 </script>
 
 <div class="chat-container">
 	<div class="messages">
 		{#each messages as msg}
-			<div class={`message ${msg.role}`}>
-				<strong>{msg.role === 'user' ? 'You' : 'Bot'}:</strong>
+			<div class="message">
+				<strong>{msg.bot}:</strong>
 				{msg.text}
 			</div>
 		{/each}
@@ -42,10 +62,11 @@
 	<div class="input-row">
 		<input
 			bind:value={input}
-			on:keydown={(e) => e.key === 'Enter' && sendMessage()}
-			placeholder="Write your message..."
+			on:keydown={(e) => e.key === 'Enter' && startConversation()}
+			placeholder="Enter a topic to start..."
 		/>
-		<button on:click={sendMessage}>Send</button>
+		<button on:click={startConversation}>Start New Topic</button>
+		<button on:click={continueConversation}>Continue Talking</button>
 	</div>
 </div>
 
@@ -53,6 +74,7 @@
 	.chat-container {
 		max-width: calc(70% - 5px);
 		min-width: calc(350px);
+		height: fit-content;
 		margin: 2rem auto;
 		background: #372f2f;
 		border-radius: 1rem;
@@ -61,7 +83,6 @@
 	}
 
 	.messages {
-		max-height: 300px;
 		overflow-y: auto;
 		margin-bottom: 1rem;
 	}
@@ -70,21 +91,13 @@
 		padding: 0.5rem;
 		margin: 0.5rem 0;
 		border-radius: 0.5rem;
-	}
-
-	.message.user {
-		background-color: #81e9c6;
-		text-align: right;
-	}
-
-	.message.bot {
-		background-color: rgb(255, 255, 255);
-		text-align: left;
+		background-color: #fff;
 	}
 
 	.input-row {
 		display: flex;
 		gap: 0.5rem;
+		flex-wrap: wrap;
 	}
 
 	input {
