@@ -1,5 +1,5 @@
 <script lang="ts">
-	let messages: { bot: string; text: string }[] = [];
+	let messages: { bot: string; text: string; chat_color: string }[] = [];
 	let input = '';
 	let session_id = '';
 
@@ -24,7 +24,10 @@
 		const data = await response.json();
 
 		session_id = data.session_id;
-		messages = [...messages, { bot: data.bot_name, text: data.response }];
+		messages = [
+			...messages,
+			{ bot: data.bot_name, text: data.response, chat_color: data.chat_color }
+		];
 	}
 
 	async function continueConversation() {
@@ -45,63 +48,126 @@
 		const response = await fetch('http://127.0.0.1:8000/multi-agent-chat', options);
 		const data = await response.json();
 
-		messages = [...messages, { bot: data.bot_name, text: data.response }];
+		messages = [
+			...messages,
+			{ bot: data.bot_name, text: data.response, chat_color: data.chat_color }
+		];
 	}
 </script>
 
 <div class="chat-container">
-	<div class="messages">
-		{#each messages as msg}
-			<div class="message">
-				<strong>{msg.bot}:</strong>
-				{msg.text}
-			</div>
-		{/each}
-	</div>
-
-	<div class="input-row">
+	<div class="TopicList">
+		<button
+			on:click={() => {
+				input = 'The effects of the Internet on journalist jobs';
+				startConversation();
+			}}>Internet effect on jobs</button
+		>
+		<button
+			on:click={() => {
+				input = 'Anything';
+				startConversation();
+			}}>To do...</button
+		>
+		<button
+			on:click={() => {
+				input = 'Anything';
+				startConversation();
+			}}>To do...</button
+		>
+		<button
+			on:click={() => {
+				input = 'Anything';
+				startConversation();
+			}}>To do...</button
+		>
 		<input
 			bind:value={input}
 			on:keydown={(e) => e.key === 'Enter' && startConversation()}
-			placeholder="Enter a topic to start..."
+			placeholder="Custom Topic..."
 		/>
-		<button on:click={startConversation}>Start New Topic</button>
-		<button on:click={continueConversation}>Continue Talking</button>
+		<div class="marginLeft"><button on:click={startConversation}>Start New Topic</button></div>
+	</div>
+
+	<div class="main-box">
+		<div class="messages">
+			<h3 style="color: white;">Messages:</h3>
+			<div></div>
+			{#each messages as msg}
+				<!-- <pre>{JSON.stringify(msg)}</pre> -->
+				<div class="message" style="background-color: {msg.chat_color}">
+					<strong>{msg.bot}:</strong>
+					{msg.text}
+				</div>
+			{/each}
+		</div>
+		<div class="marginLeft"><button on:click={continueConversation}>Continue Talking</button></div>
 	</div>
 </div>
 
 <style>
 	.chat-container {
-		max-width: calc(70% - 5px);
-		min-width: calc(350px);
-		height: fit-content;
-		margin: 2rem auto;
+		width: 100%;
+		min-height: 50%;
+		display: grid;
+		grid:
+			'TopicList messages' 1fr
+			/ 20% auto;
+		gap: 1rem;
 		background: #372f2f;
 		border-radius: 1rem;
 		padding: 1rem;
 		box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 	}
 
-	.messages {
+	.TopicList {
+		grid-area: TopicList;
+		width: 100%;
+		max-height: 50vh;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		justify-content: space-between;
+		background: #4e4848;
+		border-radius: 1rem;
+		padding: 1rem;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	}
+
+	.marginLeft {
+		margin-left: auto;
+	}
+
+	.main-box {
+		display: flex;
+		flex-direction: column;
 		overflow-y: auto;
 		margin-bottom: 1rem;
+		gap: 16px;
+		width: 100%;
+		justify-content: space-between;
+	}
+
+	.messages {
+		display: flex;
+		flex-direction: column;
+		overflow-y: auto;
+		margin-bottom: 1rem;
+		gap: 16px;
+		width: 100%;
+		justify-content: flex-start;
 	}
 
 	.message {
 		padding: 0.5rem;
 		margin: 0.5rem 0;
 		border-radius: 0.5rem;
-		background-color: #fff;
-	}
-
-	.input-row {
-		display: flex;
-		gap: 0.5rem;
-		flex-wrap: wrap;
+		background-color: var(--bg, white);
 	}
 
 	input {
 		flex: 1;
+		max-height: 100px;
 		padding: 0.5rem;
 		border-radius: 0.5rem;
 		border: 1px solid #ccc;
