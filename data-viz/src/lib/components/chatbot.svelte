@@ -20,7 +20,7 @@
 			body
 		};
 
-		const response = await fetch('http://127.0.0.1:8000/multi-agent-chat', options);
+		const response = await fetch('https://j-ai-3jvd.onrender.com/multi-agent-chat', options);
 		const data = await response.json();
 
 		session_id = data.session_id;
@@ -45,7 +45,7 @@
 			body
 		};
 
-		const response = await fetch('http://127.0.0.1:8000/multi-agent-chat', options);
+		const response = await fetch('https://j-ai-3jvd.onrender.com/multi-agent-chat', options);
 		const data = await response.json();
 
 		messages = [
@@ -108,7 +108,7 @@
 <style>
 	.chat-container {
 		width: 100%;
-		min-height: 50%;
+		min-height: 500px;
 		display: grid;
 		grid:
 			'TopicList messages' 1fr
@@ -123,6 +123,7 @@
 	.TopicList {
 		grid-area: TopicList;
 		width: 100%;
+		min-height: 400px;
 		max-height: 50vh;
 		display: flex;
 		flex-direction: column;

@@ -13,6 +13,7 @@
 	.Title {
 		color: white;
 		font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+		min-height: 100px;
 		height: 5vh;
 		padding-left: calc(2%);
 		padding-top: calc(2%);
