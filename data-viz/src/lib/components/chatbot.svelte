@@ -65,28 +65,30 @@
 		>
 		<button
 			on:click={() => {
-				input = 'Anything';
+				input = 'The advantages to AI in increased efficiency, but also its downsides';
 				startConversation();
-			}}>To do...</button
+			}}>AI advantages and disadvantages</button
 		>
 		<button
 			on:click={() => {
 				input = 'Anything';
 				startConversation();
-			}}>To do...</button
+			}}>Talk about anything</button
 		>
 		<button
 			on:click={() => {
-				input = 'Anything';
+				input = 'The arrival of AI and its relation and comparisson to the arrival of the internet';
 				startConversation();
-			}}>To do...</button
+			}}>What the reports on your time talk about</button
 		>
 		<input
 			bind:value={input}
 			on:keydown={(e) => e.key === 'Enter' && startConversation()}
 			placeholder="Custom Topic..."
 		/>
-		<div class="marginLeft"><button on:click={startConversation}>Start New Topic</button></div>
+		<div class="marginLeft" style="color: red;">
+			<button on:click={startConversation}>Start New Topic</button>
+		</div>
 	</div>
 
 	<div class="main-box">
